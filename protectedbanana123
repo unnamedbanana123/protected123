@@ -1,66 +1,88 @@
--- Create the ScreenGui
-local screenGui = Instance.new("ScreenGui")
-screenGui.Name = "UpdateMessageGui"
-screenGui.ResetOnSpawn = false
-screenGui.Parent = game:GetService("Players").LocalPlayer:WaitForChild("PlayerGui")
+-- Wait until the game is fully loaded
+repeat wait() until game:IsLoaded()
 
--- Create the TextLabel for the main message
-local mainMessage = Instance.new("TextLabel")
-mainMessage.Size = UDim2.new(1, 0, 0.5, 0) -- Top half of the screen
-mainMessage.BackgroundTransparency = 0.5 -- Slight transparency
-mainMessage.BackgroundColor3 = Color3.new(0, 0, 0) -- Black background
-mainMessage.TextColor3 = Color3.new(1, 1, 1) -- White text
-mainMessage.Text = "Script is updated, check Discord"
-mainMessage.Font = Enum.Font.SourceSansBold
-mainMessage.TextScaled = true -- Scale text to fit the label
-mainMessage.Parent = screenGui
+-- Create GUI elements
+local function createGui()
+    local player = game.Players.LocalPlayer
+    local screenGui = Instance.new("ScreenGui")
+    screenGui.Name = "FullScreenGUI"
+    screenGui.Parent = player.PlayerGui
 
--- Create the TextLabel for the Discord link
-local discordLink = Instance.new("TextLabel")
-discordLink.Size = UDim2.new(1, 0, 0.5, 0) -- Bottom half of the screen
-discordLink.Position = UDim2.new(0, 0, 0.5, 0)
-discordLink.BackgroundTransparency = 0.5 -- Slight transparency
-discordLink.BackgroundColor3 = Color3.new(0, 0, 0) -- Black background
-discordLink.TextColor3 = Color3.new(1, 1, 1) -- White text
-discordLink.Text = "https://discord.gg/gFNTebhGFU"
-discordLink.Font = Enum.Font.SourceSansBold
-discordLink.TextScaled = true -- Scale text to fit the label
-discordLink.Parent = screenGui
+    -- Create ImageLabel for background
+    local backgroundImage = Instance.new("ImageLabel")
+    backgroundImage.Size = UDim2.new(1, 0, 1, 0) -- Full screen size
+    backgroundImage.Position = UDim2.new(0, 0, 0, 0) -- Positioned at the top-left corner
+    backgroundImage.BackgroundTransparency = 1 -- Transparent background
+    backgroundImage.Image = "rbxassetid://11648237431" -- Background image ID
+    backgroundImage.ImageColor3 = Color3.fromRGB(255, 255, 255) -- Ensure image color is white
+    backgroundImage.Parent = screenGui
 
--- Function to create an RGB effect
-local function rgbEffect(textLabel)
-    local hue = 0
-    local function updateColor()
-        hue = hue + 1
-        if hue >= 360 then
-            hue = 0
-        end
-        textLabel.TextColor3 = Color3.fromHSV(hue/360, 1, 1)
-    end
-    while textLabel.Parent do
-        updateColor()
-        wait(0.03)
+    -- Create Frame to hold other elements
+    local frame = Instance.new("Frame")
+    frame.Size = UDim2.new(1, 0, 1, 0) -- Full screen size
+    frame.Position = UDim2.new(0, 0, 0, 0) -- Positioned at the top-left corner
+    frame.BackgroundTransparency = 1 -- Transparent background
+    frame.BorderSizePixel = 0 -- No border
+    frame.Parent = screenGui
+
+    -- Create TextLabel
+    local textLabel = Instance.new("TextLabel")
+    textLabel.Size = UDim2.new(1, -40, 0.4, -20) -- Slightly smaller than the frame to center text
+    textLabel.Position = UDim2.new(0, 20, 0, 20) -- Centered with padding
+    textLabel.BackgroundTransparency = 1 -- Transparent background
+    textLabel.TextColor3 = Color3.fromRGB(255, 255, 255) -- Initial color (white)
+    textLabel.TextScaled = true
+    textLabel.TextWrapped = true
+    textLabel.Text = "script is outdated copy that invitelink" -- Displayed text
+    textLabel.TextStrokeTransparency = 0.5 -- Optional: Adds a stroke for readability
+    textLabel.Parent = frame
+
+    -- Create TextBox
+    local textBox = Instance.new("TextBox")
+    textBox.Size = UDim2.new(1, -40, 0.4, -20) -- Size similar to TextLabel
+    textBox.Position = UDim2.new(0, 20, 0.5, 20) -- Positioned below the TextLabel
+    textBox.BackgroundColor3 = Color3.fromRGB(50, 50, 50) -- Dark gray background
+    textBox.TextColor3 = Color3.fromRGB(255, 255, 255) -- White text
+    textBox.TextStrokeTransparency = 0.5 -- Optional: Adds a stroke for readability
+    textBox.Text = "https://discord.gg/gFNTebhGFU" -- Default text
+    textBox.ClearTextOnFocus = false -- Keep text when focus is lost
+    textBox.TextScaled = true
+    textBox.TextWrapped = true
+    textBox.Parent = frame
+end
+
+-- Function to smoothly change text color
+local function animateTextColor(textLabel)
+    local colors = {
+        Color3.fromRGB(255, 0, 0),   -- Red
+        Color3.fromRGB(255, 128, 0), -- Orange
+        Color3.fromRGB(255, 255, 0), -- Yellow
+        Color3.fromRGB(0, 255, 0),   -- Green
+        Color3.fromRGB(0, 0, 255),   -- Blue
+        Color3.fromRGB(75, 0, 130),   -- Indigo
+        Color3.fromRGB(238, 130, 238) -- Violet
+    }
+    
+    local index = 1
+    local delay = 1 -- Delay between color changes
+    
+    while true do
+        textLabel.TextColor3 = colors[index]
+        index = index % #colors + 1
+        wait(delay)
     end
 end
 
--- Start the RGB effect for the Discord link
-spawn(function()
-    rgbEffect(discordLink)
-end)
+-- Main function
+local function main()
+    createGui() -- Create GUI elements
+    
+    -- Start animating the text color
+    local textLabel = game.Players.LocalPlayer.PlayerGui:FindFirstChild("FullScreenGUI"):FindFirstChild("Frame"):FindFirstChild("TextLabel")
+    if textLabel then
+        animateTextColor(textLabel)
+    end
+end
 
--- Optional: Add a button to close the message
-local closeButton = Instance.new("TextButton")
-closeButton.Size = UDim2.new(0, 200, 0, 50)
-closeButton.Position = UDim2.new(0.5, -100, 0.9, -25) -- Centered at the bottom
-closeButton.BackgroundTransparency = 0.5
-closeButton.BackgroundColor3 = Color3.new(1, 0, 0) -- Red button
-closeButton.TextColor3 = Color3.new(1, 1, 1) -- White text
-closeButton.Text = "Close"
-closeButton.Font = Enum.Font.SourceSansBold
-closeButton.TextScaled = true
-closeButton.Parent = screenGui
-
--- Close button functionality
-closeButton.MouseButton1Click:Connect(function()
-    screenGui:Destroy()
-end)
+-- Execute the main function
+main()
